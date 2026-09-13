@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' show MethodChannel, rootBundle;
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geocoding/geocoding.dart' as geo;
@@ -30,6 +30,8 @@ class YolAsistaniEkrani extends StatefulWidget {
 class _YolAsistaniEkraniState extends State<YolAsistaniEkrani> with SingleTickerProviderStateMixin {
   static const Color _kirmizi = Color(0xFFE3262E);
   static const Color _mavi = Color(0xFF0A84FF);
+  static const MethodChannel _androidAutoKanal =
+      MethodChannel('com.example.enobet/android_auto');
 
   final MapController _mapController = MapController();
   final TextEditingController _hedefController = TextEditingController();
@@ -64,6 +66,7 @@ class _YolAsistaniEkraniState extends State<YolAsistaniEkrani> with SingleTicker
   bool _yenidenRotaYukleniyor = false;
   int _rotaDisiSayac = 0;
   int _isletmeYuklemeToken = 0;
+  int _sonAndroidAutoGuncellemeMs = 0;
   double _sonRotaIlerlemesiMetre = 0;
   double _kalanMesafeMetre = 0;
   double _kalanSureSaniye = 0;
@@ -118,6 +121,7 @@ class _YolAsistaniEkraniState extends State<YolAsistaniEkrani> with SingleTicker
     _yolculukKonumAboneligi?.cancel();
     _hedefFocusNode.dispose();
     _hedefController.dispose();
+    unawaited(_androidAutoDurumuTemizle());
     super.dispose();
   }
 
@@ -1518,6 +1522,7 @@ class _YolAsistaniEkraniState extends State<YolAsistaniEkrani> with SingleTicker
         _konumEngelli = false;
       });
     }
+    unawaited(_androidAutoDurumuGuncelle(zorla: true));
 
     try {
       final Position ilkKonum = await Geolocator.getCurrentPosition(
@@ -1578,6 +1583,7 @@ class _YolAsistaniEkraniState extends State<YolAsistaniEkrani> with SingleTicker
     } else {
       _yolculukAktif = false;
     }
+    await _androidAutoDurumuTemizle();
   }
 
   Future<void> _yolculukKonumunuIsle(Position position) async {
@@ -1651,6 +1657,8 @@ class _YolAsistaniEkraniState extends State<YolAsistaniEkrani> with SingleTicker
       });
     }
 
+    unawaited(_androidAutoDurumuGuncelle());
+
     final List<_GuzergahNoktasi> siradaki = _siradakiIsletmeler(limit: 1);
     if (siradaki.isNotEmpty) {
       final _GuzergahNoktasi nokta = siradaki.first;
@@ -1684,6 +1692,7 @@ class _YolAsistaniEkraniState extends State<YolAsistaniEkrani> with SingleTicker
         _guzergahNoktalari = <_GuzergahNoktasi>[];
       });
       await _seciliRotaIsletmeleriniHazirla();
+      unawaited(_androidAutoDurumuGuncelle(zorla: true));
       if (mounted) {
         _mesaj('Rota güncellendi.');
       }
@@ -1754,6 +1763,65 @@ class _YolAsistaniEkraniState extends State<YolAsistaniEkrani> with SingleTicker
 
   double _isletmeyeKalanMetre(_GuzergahNoktasi nokta) {
     return math.max(0, nokta.rotaBaslangicindanMetre - _sonRotaIlerlemesiMetre);
+  }
+
+  Future<void> _androidAutoDurumuGuncelle({bool zorla = false}) async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
+    if (!_yolculukAktif || _rotalar.isEmpty || _seciliRota >= _rotalar.length) {
+      return;
+    }
+
+    final int simdiMs = DateTime.now().millisecondsSinceEpoch;
+    if (!zorla && simdiMs - _sonAndroidAutoGuncellemeMs < 2000) return;
+    _sonAndroidAutoGuncellemeMs = simdiMs;
+
+    final _RotaAdimi? adim = _siradakiRotaAdimi();
+    final double manevraKalan = adim == null
+        ? _kalanMesafeMetre
+        : math.max(0, adim.rotaMetre - _sonRotaIlerlemesiMetre);
+    final List<_GuzergahNoktasi> siradaki = _siradakiIsletmeler(limit: 5);
+    final int varisMs = DateTime.now()
+        .add(Duration(seconds: math.max(0, _kalanSureSaniye.round())))
+        .millisecondsSinceEpoch;
+
+    final Map<String, dynamic> durum = <String, dynamic>{
+      'active': true,
+      'updatedAtMs': simdiMs,
+      'target': _hedef?.ad ?? 'Hedef',
+      'remainingMeters': _kalanMesafeMetre,
+      'remainingSeconds': _kalanSureSaniye,
+      'arrivalEpochMs': varisMs,
+      'maneuver': _manevraBaslik(adim),
+      'maneuverMeters': manevraKalan,
+      'businesses': siradaki
+          .map(
+            (_GuzergahNoktasi nokta) => <String, dynamic>{
+              'name': nokta.isim,
+              'type': nokta.tur.name,
+              'remainingMeters': _isletmeyeKalanMetre(nokta),
+            },
+          )
+          .toList(),
+    };
+
+    try {
+      await _androidAutoKanal.invokeMethod<void>(
+        'updateNavigationState',
+        jsonEncode(durum),
+      );
+    } catch (_) {
+      // Android Auto bağlı değilse telefon navigasyonu normal şekilde devam eder.
+    }
+  }
+
+  Future<void> _androidAutoDurumuTemizle() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return;
+    _sonAndroidAutoGuncellemeMs = 0;
+    try {
+      await _androidAutoKanal.invokeMethod<void>('clearNavigationState');
+    } catch (_) {
+      // Android Auto desteği olmayan platformlarda sessizce geç.
+    }
   }
 
   double _bearingDerece(LatLng a, LatLng b) {
