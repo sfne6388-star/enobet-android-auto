@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "178253833354",
+    "project_id": "enobet-b8ea7",
+    "storage_bucket": "enobet-b8ea7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:178253833354:android:96e1a37a38b5ec2c7db973",
+        "android_client_info": {
+          "package_name": "com.example.enobet"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSqe2fLove4bexwVwwtzgfIJVu7bZrScE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

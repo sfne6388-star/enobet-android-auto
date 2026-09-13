@@ -1,0 +1,24 @@
+ENöbet hazır hizmet kataloğu
+
+Kaynak: © OpenStreetMap contributors
+Türkiye veri kesiti: Geofabrik, 06.09.2026
+https://download.geofabrik.de/europe/turkey.html
+https://www.openstreetmap.org/copyright
+
+assets/data/turkiye_hizmetleri.json dosyasındaki işletme ve ilçe merkezi
+verileri Open Database License (ODbL) 1.0 kapsamında sunulmaktadır:
+https://opendatacommons.org/licenses/odbl/1-0/
+Bu lisans veri tabanına uygulanır; uygulama kodunun lisansı değildir.
+
+İşletmeler OSM etiketleri ve hizmet adlarıyla sınıflandırılmış, koordinatları
+OSM ilçe sınırları içinde test edilerek il/ilçeye atanmıştır. Bir ilçeye
+güvenle atanamayan kayıtlar pakete alınmamıştır. Telefon ve çalışma saatleri
+yalnızca kaynakta mevcutsa kullanılmıştır. Eksik telefon üretilmemiştir.
+
+Bu katalog Türkiye'deki her işletmenin eksiksiz resmi sicili değildir.
+Bir kategoride kayıt olmaması, ilçede o işletmenin bulunmadığı anlamına gelmez.
+Kayıtlar paket tarihindeki veridir; kendiliğinden güncellenmez.
+Yeni kayıtlar için veri paketinin yenilenmesi gerekir.
+
+Nöbetçi eczane listesi ayrı günlük kaynaktan alınır. Genel aramada çıkan
+eczane kaydı tek başına nöbetçi olduğunu göstermez.

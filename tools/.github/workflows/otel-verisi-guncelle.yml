@@ -1,0 +1,70 @@
+name: Otel Verisini Guncelle
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  otel-verisi:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repoyu al
+        uses: actions/checkout@v4
+
+      - name: Osmium kur
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y osmium-tool
+
+      - name: Turkiye OSM verisini indir
+        run: |
+          curl -L --fail --retry 4 \
+            -o /tmp/turkey-latest.osm.pbf \
+            https://download.geofabrik.de/europe/turkey-latest.osm.pbf
+
+      - name: Otelleri ayikla
+        run: |
+          osmium tags-filter \
+            /tmp/turkey-latest.osm.pbf \
+            nwr/tourism=hotel \
+            -o /tmp/hotels.osm.pbf \
+            --overwrite
+
+          osmium export \
+            /tmp/hotels.osm.pbf \
+            -o /tmp/hotels.geojson \
+            --overwrite
+
+      - name: Otel kayitlarini uygulama verisine ekle
+        run: python3 tools/otel_verisi_olustur.py
+
+      - name: Sonucu kontrol et
+        run: |
+          python3 - <<'PY'
+          import json
+          p = 'assets/data/turkiye_hizmetleri.json'
+          d = json.load(open(p, encoding='utf-8'))
+          hotels = []
+          for r in d['records']:
+              if 'Otel' in (r.get('categories') or []):
+                  hotels.append(r)
+          print('Toplam otel kaydi:', len(hotels))
+          if not hotels:
+              raise SystemExit('HATA: Otel kaydi olusmadi.')
+          print('Ornek:', hotels[0].get('tags', {}).get('name', 'Otel'), hotels[0]['il'], hotels[0]['ilce'])
+          PY
+
+      - name: JSON dosyasini GitHub'a kaydet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/data/turkiye_hizmetleri.json
+          if git diff --cached --quiet; then
+            echo "Degisiklik yok."
+          else
+            git commit -m "Turkiye otel verileri eklendi"
+            git push
+          fi

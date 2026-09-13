@@ -1,0 +1,18 @@
+YOL ASISTANI TEMIZ V3
+
+Degisen/eklenen dosyalar:
+- lib/screens/yol_asistani.dart
+- assets/data/yol_hizmetleri.json
+- pubspec.yaml
+- android/app/src/main/AndroidManifest.xml
+- tool/yol_hizmetleri_uret.py
+- .github/workflows/yol-hizmetleri-guncelle.yml
+- .github/workflows/apk-olustur.yml
+
+Onemli:
+1) Paketi proje ana klasorunun uzerine cikarin.
+2) Git'e gonderin.
+3) GitHub Actions -> Yol Hizmetleri Verisini Guncelle workflowunu bir kez calistirin.
+4) Bu workflow yesil bittikten sonra APK Olustur workflowunu calistirin.
+
+APK workflowu, yol_hizmetleri.json surumu 4 ve yol-segment baglantilari hazir degilse buildi bilerek durdurur.

@@ -1,0 +1,53 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub/
+.pub-cache/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.metadata
+
+# Android
+android/.gradle/
+android/app/debug/
+android/app/profile/
+android/app/release/
+android/key.properties
+
+# iOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+
+# macOS
+macos/Pods/
+macos/Flutter/ephemeral/
+
+# Web
+web/.dart_tool/
+
+# Node.js / Firebase Functions
+node_modules/
+functions/node_modules/
+functions/.firebase/
+
+# Local environment files
+*.local
+.env
+.env.*
+!.env.example
+
+# Firebase service account / credentials
+service-account*.json
+firebase-service-account*.json
+*-service-account*.json
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

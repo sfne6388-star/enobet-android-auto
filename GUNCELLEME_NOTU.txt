@@ -1,0 +1,33 @@
+ENöbet - Hazır il/ilçe hizmet listeleri
+
+Bu sürümde nöbetçi eczane dışındaki kategoriler dış sunucuda işletme aramaz.
+İşletmeler uygulamayla gelen assets/data/turkiye_hizmetleri.json dosyasındadır.
+Kategori seçimi yalnızca seçilen il/ilçeyi listeler. Arama kutusu bütün
+Türkiye paketini tarar. Konum değişince mesafe sıralaması yeniden hesaplanır.
+Elle il/ilçe seçiminde merkez koordinatı da aynı paketten okunur.
+
+Kaynak kesiti: 06.09.2026, OpenStreetMap / Geofabrik.
+Gerçek kayıt sayısı: 53411
+Kayıt bulunan il: 81
+Kayıt bulunan ilçe: 965
+
+Kapsam, kaynakta bulunan kayıtlardır; tüm işletmelerin eksiksiz resmi sicili
+değildir. İlçede bir kategorinin boş olması internet hatası değildir.
+Eksik telefonlar üretilmez. Nöbetçi eczane günlük kaynaktan alınmaya devam eder.
+Kaynak ve lisans: VERI_KAYNAGI.txt. İlçe bazında sayılar: VERI_KAPSAMI.json.
+
+Taksi ÇAĞIR düğmesi ve telefon satırı, Ek Hizmetler düğmesinin 6 kategorinin
+altındaki ortalı konumu ve üst bölümde azaltılan boşluk korunmuştur.
+
+Chrome denemesi:
+1. ZIP'i yeni bir klasöre ayıklayın.
+2. İçindeki enobet klasöründe terminal açın.
+3. flutter pub get
+4. flutter run -d chrome --web-port 7357
+5. Edirne / Merkez seçip ATM, Taksi, Hastane ve Ek Hizmetler'i deneyin.
+6. Başka bir ilçeye geçin; listelerin o ilçeyle sınırlı kaldığını kontrol edin.
+7. Arama kutusunda başka bir şehir adı yazın; Türkiye genelindeki paket
+   kayıtlarının arandığını kontrol edin.
+
+Bu kaynak arşivi kullanıcının sağladığı web projesini temel alır.
+Android/iOS platform klasörleri kaynak ZIP'te bulunmadığından eklenmemiştir.
