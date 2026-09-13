@@ -26,21 +26,8 @@ jobs:
       - name: Paketleri al
         run: flutter pub get
 
-      - name: Eczane API anahtarini kontrol et
-        env:
-          TEKNIKZEKA_API_KEY: ${{ secrets.TEKNIKZEKA_API_KEY }}
-        run: |
-          if [ -z "$TEKNIKZEKA_API_KEY" ]; then
-            echo "HATA: TEKNIKZEKA_API_KEY GitHub Secret bulunamadi."
-            exit 1
-          fi
-
       - name: Android Auto icin AAB olustur
-        env:
-          TEKNIKZEKA_API_KEY: ${{ secrets.TEKNIKZEKA_API_KEY }}
-        run: >-
-          flutter build appbundle --release
-          --dart-define=TEKNIKZEKA_API_KEY="$TEKNIKZEKA_API_KEY"
+        run: flutter build appbundle --release
 
       - name: Android Auto AAB yukle
         uses: actions/upload-artifact@v4
